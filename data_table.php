@@ -26,7 +26,7 @@
             <tr>
             <td>{$row["id"]}</td>
             <td>{$row["name"]}</td>
-            <td><img style='width: 200px; height=200px;' src='{$row["image"]}' class='img-thumbnail' alt='Animal image'></td>
+            <td><img style='width: 200px; height=200px;' src='img/{$row["image"]}' class='img-thumbnail' alt='Animal image'></td>
             <td><a class='btn btn-dark' href='edit.php?id={$row["id"]}'>Edit  <i class='far fa-edit'></i></td>
             <td>
                 <button  onclick='loadDeleteModal({$row["id"]}, `{$row["name"]}`)' data-toggle='modal' data-target='#modalDelete' class='btn btn-danger' >Delete  <i class='fas fa-trash-alt'></i></button>
