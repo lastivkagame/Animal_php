@@ -18,7 +18,25 @@
         </thead>
         <?php
 
-        $command = $dbh->prepare("SELECT id, name, image FROM animals");
+        $page_size = 3;
+        $page_number = 1;
+        if(isset($_GET["page"])){
+          $page_number = $_GET["page"];
+        }
+        
+        $command = $dbh->prepare("SELECT COUNT(*) AS animal_count FROM animals");
+        $command->execute();
+        $count_items;
+        if ($count_animals = $command->fetch(PDO::FETCH_ASSOC)){
+          //echo "<h1>" . $count_animals["animal_count"] . "</h1>";
+          $count_items = $count_animals["animal_count"];
+        }
+
+        $pages = ceil($count_items / $page_size);
+//echo "<h1>" . $pages . "</h1>";
+
+
+        $command = $dbh->prepare("SELECT id, name, image FROM animals LIMIT " . ($page_number - 1)* $page_size .", " . $page_size);
         $command->execute();
         while ($row = $command->fetch(PDO::FETCH_ASSOC))
         {
@@ -52,6 +70,7 @@
 <?php
     $myPDO = new PDO('mysql:host=localhost;dbname=db_spu926', 'root', '');
     
+   
     $result = $myPDO->query("SELECT id, name, image FROM animals");
     
 
@@ -78,23 +97,22 @@
     //   </tr>
     // </thead>
     // <tbody>";
-$counter = 0;
 
     foreach($result as $row){
       // print $row["id"] . "\t";
       // print $row['name'] . "\t";
       // print $row['image'] . "\t";
-      $counter++;
+  
 
    echo " <tr>
    <th scope='row'>{$row["id"]}</th>
    <th scope='row'>{$row["name"]}</th>";
-   if($counter<4){
+  // if($counter<4){
     echo "<th scope='row'><img style='width: 10%;' src='img/{$row["image"]}' alt='' /></th>";
-   }
-   else{
+  // }
+   //else{
     echo "<th scope='row'><img style='width: 10%;' src='{$row["image"]}' alt='' /></th>";
-   }
+  // }
    echo "
    <th scope='row'><button  onclick='loadDeleteModal(${row["id"]})' data-toggle='modal' data-target='#modalDelete' class='btn btn-danger' >Delete  <i class='fas fa-trash-alt'></i></button>         
    <td><a class='btn btn-dark' href='editAnimal.php?id=${row["id"]}'>Edit  <i class='far fa-edit'></i></td>";
@@ -111,9 +129,46 @@ $counter = 0;
   // </table>";
 ?> 
 
+
 </tr>
     </tbody>
   </table> -->
+
+  <nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    <?php 
+
+if(isset($_GET['page']))
+{
+  $current_page = $_GET['page'];
+  if($_GET['page'] == 1){
+    $current_page = $pages + 1;
+  }
+  echo "<li class='page-item'><a class='page-link' href='?page=" . $current_page-1 . "'> - </a></li>";
+}
+else{
+  echo "<li class='page-item'><a class='page-link' href='?page=" . $pages . "'> - </a></li>";
+}
+
+    for ($i=1; $i <= $pages; $i++) { 
+      echo "<li class='page-item'><a class='page-link' href='?page=$i'>$i</a></li>";
+    }
+
+    if(isset($_GET['page']))
+    {
+      $current_page = $_GET['page'];
+      if($_GET['page'] == $pages){
+        $current_page = 0;
+      }
+      echo "<li class='page-item'><a class='page-link' href='?page=" . $current_page+1 . "'> + </a></li>";
+    }
+    else{
+      echo "<li class='page-item'><a class='page-link' href='?page=1'> + </a></li>";
+    }
+    ?>
+    
+  </ul>
+</nav>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script>

@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   //$name = $_POST['lastname'];
   $image = $_POST['image'];
   $image_name = uniqid() . ".png";
+  //base64_to_jpeg($image, "img/" . $image_name);
   //printf("uniqid(): %s\r\n", uniqid());
   
 

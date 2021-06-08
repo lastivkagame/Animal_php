@@ -40,6 +40,41 @@
         echo "a == b ";
     }
     ?> -->
+    <?php require_once "connection_database.php"; ?>
+    <?php 
+
+     // Pagination.
+    //  if (isset($_GET['page']) && is_numeric($_GET['page'])) {
+    //   $page = htmlspecialchars($_GET['page']);
+    // }
+    // else{
+    //   $page = 1;
+    // }
+    // $num_results_on_page = 5;
+    // $calc_page = ($page - 1) * $num_results_on_page;
+  
+    // echo "work";
+    // if(isset($_POST["btnSearch"])){
+    //   echo "work2";
+    //     $search_query = preg_replace("#[^a-z 0-9?!]#i", "", $POST["searchbar"]);
+
+    //     $str_command = "SELECT id, name, image FROM animals WHERE name LIKE " . $POST["searchbar"] . "%";
+    //     $command = $dbh->prepare($str_command);
+    //     $command->execute();
+    //      while ($row = $command->fetch(PDO::FETCH_ASSOC))
+    //      {
+    //          echo"
+    //          <tr>
+    //          <td>{$row["id"]}</td>
+    //          <td>{$row["name"]}</td>
+    //          <td>{$row["id"]}</td>
+    //          ";
+    //      }
+
+       // header('location: search.php?query=.urlencode($search_query).`');
+    //}
+
+    ?>
     
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -51,7 +86,7 @@
   <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item active">
-        <a class="nav-link" href="/php_animal/">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="/php_animal/">Home <span class="sr-only"></span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="add.php">ADD Animal</a>
@@ -62,10 +97,36 @@
      
     </ul>
     <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-warning" type="submit">Search</button>
+        <!-- <input class="form-control me-2" name="searchbar" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-warning" type="submit" onClick="SearchAnimals()" name="btnSearch" id="btnSearch">Search</button> -->
+        <!-- <form class="d-flex col-4">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="search_line">
+            <button class="btn btn-outline-success" type="submit" id="btn_search"><i class="bi bi-search"></i></button>
+        </form> -->
+        <form action="" method="post">  
+Search: <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="term" /><br />  
+<input type="submit" class="btn btn-outline-warning" value="Search" />  
+</form>  
+<?php
+if (!empty($_REQUEST['term'])) {
+echo "s";
+$term = mysql_real_escape_string($_REQUEST['term']);     
+
+$sql = "SELECT * FROM animals WHERE name LIKE '%".$term."%'"; 
+$r_query = mysql_query($sql); 
+echo "something";
+
+while ($row = mysql_fetch_array($r_query)){  
+echo 'Primary key: ' .$row['PRIMARYKEY'];  
+echo '<br /> Code: ' .$row['name'];   
+}  
+
+}
+?>
       </form>
     </div>
   </div>
 </nav>
     <div class="container mt-5" >
+
+    
