@@ -1,16 +1,18 @@
-<?php require_once "connection_database.php"; ?>
+<!-- Include Connection to DB -->
+<?php require_once "connection_database.php"; ?> 
 
+<!-- Include Modal for Delete Items-->
 <?php include "modal.php"; ?>
 
 <h2> List of Animal</h2>
 <div class="container">
-   
-    <!-- <a class="btn btn-primary" href="addAnimal.php">Add new animal</a> -->
+     <!--#region Table with all items(with paggination)  -->
     <table class="table table-striped">
         <thead>
         <tr>
             <th>id</th>
             <th>name</th>
+            <th>type</th>
             <th>image</th>
             <th></th>
             <th></th>
@@ -18,32 +20,40 @@
         </thead>
         <?php
 
-        $page_size = 3;
-        $page_number = 1;
+        //Pagination
+        $page_size = 3; // count of element on one page
+        $page_number = 1; //current page
+
+        //get and set current page
         if(isset($_GET["page"])){
           $page_number = $_GET["page"];
         }
         
+        //select count/(lenght) of all items from table animals in DB
         $command = $dbh->prepare("SELECT COUNT(*) AS animal_count FROM animals");
         $command->execute();
+
+        //get and write count/(lenght) in our value
         $count_items;
         if ($count_animals = $command->fetch(PDO::FETCH_ASSOC)){
-          //echo "<h1>" . $count_animals["animal_count"] . "</h1>";
           $count_items = $count_animals["animal_count"];
         }
 
+        //calculate how many pages we need 
         $pages = ceil($count_items / $page_size);
-//echo "<h1>" . $pages . "</h1>";
 
-
-        $command = $dbh->prepare("SELECT id, name, image FROM animals LIMIT " . ($page_number - 1)* $page_size .", " . $page_size);
+        //select items from table animals in DB in right amount(such as page_size = 3 -> first select 0-3 next 3-6 and next)
+        $command = $dbh->prepare("SELECT id, name, type, image FROM animals LIMIT " . ($page_number - 1)* $page_size .", " . $page_size);
         $command->execute();
+
+        //show our animals
         while ($row = $command->fetch(PDO::FETCH_ASSOC))
         {
             echo"
             <tr>
             <td>{$row["id"]}</td>
             <td>{$row["name"]}</td>
+            <td>{$row["type"]}</td>
             <td><img style='width: 200px; height=200px;' src='img/{$row["image"]}' class='img-thumbnail' alt='Animal image'></td>
             <td><a class='btn btn-dark' href='edit.php?id={$row["id"]}'>Edit  <i class='far fa-edit'></i></td>
             <td>
@@ -53,111 +63,39 @@
         }
 
         ?>
-    </table>
-    </div>
-<!-- 
-<table class='table' method="post">
-    <thead>
-      <tr>
-        <th scope='col'>ID</th>
-        <th scope='col'>Name</th>
-        <th scope='col'>Image</th>
-        <th scope='col'>Controls</th>
-      </tr>
-    </thead>
-    <tbody>
-
-<?php
-    $myPDO = new PDO('mysql:host=localhost;dbname=db_spu926', 'root', '');
-    
-   
-    $result = $myPDO->query("SELECT id, name, image FROM animals");
-    
-
-    // function DeleteAnimal($id){
-    //   $myPDO = new PDO('mysql:host=localhost;dbname=db_spu926', 'root', '');
-    //   $del_SQL = "DELETE FROM animals WHERE id='$id'";
-    // }
-
-    if(array_key_exists('button1', $_POST)) {
-      echo "This is Button1 that is selected";
-  }
-  else if(array_key_exists('button2', $_POST)) {
-    $myPDO = new PDO('mysql:host=localhost;dbname=db_spu926', 'root', '');
-    $del_SQL = "DELETE FROM animals WHERE id='$id'";
-  }
-
-
-    // echo "<table class='table'>
-    // <thead>
-    //   <tr>
-    //     <th scope='col'>ID</th>
-    //     <th scope='col'>Name</th>
-    //     <th scope='col'>Image</th>
-    //   </tr>
-    // </thead>
-    // <tbody>";
-
-    foreach($result as $row){
-      // print $row["id"] . "\t";
-      // print $row['name'] . "\t";
-      // print $row['image'] . "\t";
-  
-
-   echo " <tr>
-   <th scope='row'>{$row["id"]}</th>
-   <th scope='row'>{$row["name"]}</th>";
-  // if($counter<4){
-    echo "<th scope='row'><img style='width: 10%;' src='img/{$row["image"]}' alt='' /></th>";
-  // }
-   //else{
-    echo "<th scope='row'><img style='width: 10%;' src='{$row["image"]}' alt='' /></th>";
-  // }
-   echo "
-   <th scope='row'><button  onclick='loadDeleteModal(${row["id"]})' data-toggle='modal' data-target='#modalDelete' class='btn btn-danger' >Delete  <i class='fas fa-trash-alt'></i></button>         
-   <td><a class='btn btn-dark' href='editAnimal.php?id=${row["id"]}'>Edit  <i class='far fa-edit'></i></td>";
-   
-  }
-  //  <th scope='row'><input type='submit' name='button2' class='btn btn-danger' value='DELETE' data-target='' /></th>";
-  //  <th scope='row'><input type='submit' name='button1' class='btn btn-warning' value='EDIT' /></th>
-  //  <th scope='row'><img style='width: 10%;' src='img/{$row["image"]}' alt='' /></th>
-  //  <th scope='row'><button class='btn btn-danger'><a href='del.php?id=<?= $row['id'];'>DELETE</a></button></th>";
-  //  <th scope='row'><a class='btn btn-warning' href='edit.php?id=<?=$row['id'];'>EDIT</a></th>
-
-  //   echo " </tr>
-  //   </tbody>
-  // </table>";
-?> 
-
-
-</tr>
-    </tbody>
-  </table> -->
-
-  <nav aria-label="Page navigation example">
+  </table>
+</div>
+<!--#region Paggination(Controls(buttons))  -->
+<nav aria-label="Page navigation example">
   <ul class="pagination justify-content-center">
     <?php 
+    
+    //button '-' if we click -> current page-1 (we must back on 1 page)
+    if(isset($_GET['page']))
+    {
+      $current_page = $_GET['page']; //get current page
+      if($_GET['page'] == 1) //if page == 1 we cant do -1 -> we need back to last
+      { 
+        $current_page = $pages + 1;
+      }
+      echo "<li class='page-item'><a class='page-link' href='?page=" . $current_page-1 . "'> - </a></li>";
+    }
+    else{ 
+      //page not exist -> began from last page
+      echo "<li class='page-item'><a class='page-link' href='?page=" . $pages . "'> - </a></li>";
+    }
 
-if(isset($_GET['page']))
-{
-  $current_page = $_GET['page'];
-  if($_GET['page'] == 1){
-    $current_page = $pages + 1;
-  }
-  echo "<li class='page-item'><a class='page-link' href='?page=" . $current_page-1 . "'> - </a></li>";
-}
-else{
-  echo "<li class='page-item'><a class='page-link' href='?page=" . $pages . "'> - </a></li>";
-}
-
+    //show all page with clickabed buttons(pages)
     for ($i=1; $i <= $pages; $i++) { 
       echo "<li class='page-item'><a class='page-link' href='?page=$i'>$i</a></li>";
     }
 
+    //button '+' if we click -> current page+1 (we must forward on 1 page)
     if(isset($_GET['page']))
     {
-      $current_page = $_GET['page'];
-      if($_GET['page'] == $pages){
+      $current_page = $_GET['page']; //get current page
+      if($_GET['page'] == $pages) //if page == last page we cant do +1 -> we need back to first
+      {
         $current_page = 0;
       }
       echo "<li class='page-item'><a class='page-link' href='?page=" . $current_page+1 . "'> + </a></li>";
@@ -169,26 +107,12 @@ else{
     
   </ul>
 </nav>
+ <!--#endregion-->
+ <!--#endregion-->
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script>
-    function loadDeleteModal(id, name)
-    {
-      console.log("id: " + id + name);
-        $(`#modalDeleteContent`).empty();
-        $(`#modalDeleteContent`).append(`<div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Delete animal ${name} (#${id})?</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <form action="deleteAnimal.php" method="post">
-                <input type='hidden' name='id' value='${id}'>
-                <button type="submit" name="delete_submit" class="btn btn-danger">Delete</button>
-            </form>
-        </div>`);
-    }
-</script>
+ <!-- Include AJAX-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- There script for delete items (it call modal) -->
+<script src="js/deleteItem.js" ></script>
 

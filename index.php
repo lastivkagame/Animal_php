@@ -1,12 +1,8 @@
+<!-- Include header(links + navbar(menu and search)) -->
 <?php include "head.php"; ?>
-    <?php
-
-//unset()-delete
-    //unset($c);
-    // if(isset($c)) //is exist
-    //      echo "<p>Hello my class! {$c} </p>";
-    // ?>
-
-
+ 
+<!-- Include Table(table animals with pagination and controls(edit/delete)) -->
 <?php include "data_table.php"; ?>
+
+<!-- Include scripts -->
 <?php include "footer.php"; ?>

@@ -1,5 +1,8 @@
 <?php
+
+//for saving image
  function base64_to_jpeg($base64_string, $output_file) {
+     
   // open the output file for writing
   $ifp = fopen( $output_file, 'wb' ); 
 
