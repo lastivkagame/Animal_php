@@ -1,6 +1,5 @@
 # Animal_php 
  - add image with cropperjs
  - ready paggination
- - ready add, delete(with modal)
+ - ready CRUD
  - search(not work need to fix)
- - update(work but need to fix)
