@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   
   //get all value 
   $name = $_POST['name'];
-  //$name = $_POST['lastname'];
+  $type = $_POST['type'];
   $image = $_POST['image'];
 
   //it need becouse image contain image not name (and we need unique name)
@@ -29,15 +29,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($name)) {
         $_POST['image'] = $image; //if we reload page we need save image 
         $errors["name"] = "Name is required";
-    } else if (empty($image)) {
+    } 
+    else if (empty($type)) {
+      $errors["type"] = "Type is required";
+    }
+    else if (empty($image)) {
         $errors["image"] = "Image is required";
     }else{
       //save image
         base64_to_jpeg($image, "img/" . $image_name);
 
         //save it in DB
-        $stmt = $dbh->prepare("INSERT INTO animals (id, name, image) VALUES (NULL, :name, :image);");
+        $stmt = $dbh->prepare("INSERT INTO animals (id, name,type, image) VALUES (NULL, :name, :type, :image);");
         $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':type', $type);
         $stmt->bindParam(':image', $image_name);
         $stmt->execute();
 
@@ -86,20 +91,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <!--#endregion -->
 
-            <!--#region Name -->
+            <!--#region Name and Type -->
             <div class="form-group" style="width:100%;margin-left: 30px;">
+                <!--#region Name -->
                 <label for="exampleInputEmail1">Animal name: </label>
-                <?php
-                echo "<input type='text' name='name' class='form-control' style='width:100%;' id='exampleInputEmail1'
-                           placeholder='Enter animal name' value={$name}>"
-                ?>
 
                 <?php
                 if(isset($errors['name']))
                     echo "<small class='text-danger'>{$errors['name']}</small>"
                 ?>
+
+                <?php
+                echo "<input type='text' name='name' class='form-control' style='width:100%;' id='exampleInputEmail1'
+                           placeholder='Enter animal name' value={$name}>"
+                ?>
+                <!--#endregion -->
+
+                <!--#region Type -->
+                <label for="exampleInputEmail1" style='padding-top: 30px;'>Animal type: </label>
+
+                <?php
+                if(isset($errors['type']))
+                    echo "<small class='text-danger'>{$errors['type']}</small>"
+                ?>
+
+                <?php
+                echo "<input type='text' name='type' class='form-control' style='width:100%;' id='exampleInputEmail1'
+                           placeholder='Enter animal type' value={$type}>"
+                ?>
+
+                <!--#endregion -->
             </div>
             <!--#endregion -->
+             
   </div>
             <button style="width:100%;" type="submit" class="btn btn-warning mt-2">Submit</button>
         </form>
@@ -116,68 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <script src="js/cropper.min.js"></script> 
 
 <!-- Script that show modal for Crop Image -->
-<script>
-  $(function() {
-
-    //get image whick we must edit
-    const image = document.getElementById('image-modal');
-
-    const cropper = new Cropper(image, {
-            aspectRatio: 1 / 1,  //its do square
-            preview: ".preview"
-            // crop(event) {
-            //     console.log(event.detail.x);
-            //     console.log(event.detail.y);
-            //     console.log(event.detail.width);
-            //     console.log(event.detail.height);
-            //     console.log(event.detail.rotate);
-            //     console.log(event.detail.scaleX);
-            //     console.log(event.detail.scaleY);
-            // },
-      });
-
-
-    //if we click on image we must create uploader window 
-    let $uploader;
-    $("#imgSelect").on("click", function(){
-
-      //create uploader window a
-      $uploader=$('<input type="file" name="" accept="image/*" style="display: none;" />');
-      $uploader.click();
-
-      //when choosen image -> read it and write in our variable
-      $uploader.on("change", function(){
-
-        const [file] = $uploader[0].files
-
-        if(file){
-          var reader = new FileReader();
-          reader.onload = function(event){
-            var data = event.target.result;
-
-            // console.log("--data--", data);
-
-            //show modal for crop
-            $("#croppedModal").modal("show");
-            cropper.replace(data);
-          }
-
-          reader.readAsDataURL($uploader[0].files[0]);
-        }
-        
-      });
-
-    });
-
-    //when we click 'crop image'
-    $("#btnCropped").on("click", function(){
-      var dataCropper = cropper.getCroppedCanvas().toDataURL(); //take image that user crop
-      $("#imgSelect").attr("src", dataCropper); // set image
-      $( "#imgSelect" ).addClass( 'img-thumbnail'); //class='img-thumbnail'
-      $("#image").attr("value", dataCropper); //set value for elem where name='image'
-      $("#croppedModal").modal("hide"); //close modal
-    });
-  });
-</script>
+<script src="js/cropperjsModalEditor.js"></script>
 
 <?php include "footer.php"; ?>
