@@ -1,5 +1,5 @@
 # Animal_php 
  - add image with cropperjs
- - ready paggination
+ - ready pagination
  - ready CRUD
- - search(not work need to fix)
+ - search with pagination(queries parameterized)
