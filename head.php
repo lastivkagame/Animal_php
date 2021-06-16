@@ -44,30 +44,20 @@
     </ul>
     <!--#region Search  -->
     <form class="d-flex">
-        <input class="form-control me-2" name="searchbar" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-warning" type="submit" onClick="SearchAnimals()" name="btnSearch" id="btnSearch">Search</button>
-        <!-- <form class="d-flex col-4">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="search_line">
-            <button class="btn btn-outline-success" type="submit" id="btn_search"><i class="bi bi-search"></i></button>
-        </form> -->
-        <!-- <form action="">  
-        Search: <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="term" /><br />  
-        <input type="submit" class="btn btn-outline-warning" value="Search" />  </form>   -->
+        
+        <?php
+          $name_search="";
+          if(isset($_GET["name_search"]))
+          {
+              $name_search=$_GET["name_search"];
+          }
+        ?>
 
-        <!-- ?php
-        if (!empty($_REQUEST['term'])) {
-        echo "s";
-        $term = mysql_real_escape_string($_REQUEST['term']);     
-        
-        $sql = "SELECT * FROM animals WHERE name LIKE '%".$term."%'"; 
-        $r_query = mysql_query($sql); 
-        echo "something";
-        
-        while ($row = mysql_fetch_array($r_query)){  
-        echo 'Primary key: ' .$row['PRIMARYKEY'];  
-        echo '<br /> Code: ' .$row['name'];   
-        }  }?> -->
-      </form>
+         <form method="get">
+            <input type="text" class="form-control me-2" id="name_search" value="<?php echo $name_search; ?>" name="name_search"  placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-warning" type="submit" >Search</button>
+         </form>
+    </form>
       <!--#endregion -->
     </div>
   </div>

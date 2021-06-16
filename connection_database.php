@@ -14,10 +14,10 @@ try {
 //add animals to db every page update
 function  seedAuto($dbh)
 {
-    for ($i=50; $i < 60; $i++) {
+    for ($i=60; $i < 70; $i++) {
         $name="Leo " . $i;
         $type="Dog";
-        $image="manu.jpg";
+        $image="dog.jpg";
 
         $stmt = $dbh->prepare("INSERT INTO animals (id, name,type, image) VALUES (NULL, :name, :type, :image);");
         $stmt->bindParam(':name', $name);
